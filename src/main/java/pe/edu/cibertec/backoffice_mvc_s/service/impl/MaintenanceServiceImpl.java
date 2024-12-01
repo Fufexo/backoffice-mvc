@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 import pe.edu.cibertec.backoffice_mvc_s.dto.FilmDetailDto;
 import pe.edu.cibertec.backoffice_mvc_s.dto.FilmDto;
 import pe.edu.cibertec.backoffice_mvc_s.entity.Film;
+import pe.edu.cibertec.backoffice_mvc_s.entity.Language;
 import pe.edu.cibertec.backoffice_mvc_s.repository.FilmRepository;
+import pe.edu.cibertec.backoffice_mvc_s.repository.LanguageRepository;
 import pe.edu.cibertec.backoffice_mvc_s.service.MaintenanceService;
 
 import java.util.ArrayList;
@@ -17,6 +19,8 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 
     @Autowired
     FilmRepository filmRepository;
+    @Autowired
+    LanguageRepository languageRepository;
 
     @Override
     public List<FilmDto> getAllFilms() {
@@ -56,10 +60,21 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     @Override
     public void saveFilm(FilmDetailDto filmDetailDto) {
         Optional<Film> optionalFilm = filmRepository.findById(filmDetailDto.filmId());
-        if (optionalFilm.isPresent()) {
+        Optional<Language> optionalLanguage = languageRepository.findById(filmDetailDto.languageId());
+        if (optionalFilm.isPresent() && optionalLanguage.isPresent()) {
             Film film = optionalFilm.get();
+            Language language = optionalLanguage.get();
             film.setTitle(filmDetailDto.title());
             film.setDescription(filmDetailDto.description());
+            film.setLanguage(language);
             filmRepository.save(film);
         }
-}}
+
+    }
+
+    @Override
+    public List<Language> getAllLanguages() {
+        return (List<Language>) languageRepository.findAll();
+    }
+
+}
