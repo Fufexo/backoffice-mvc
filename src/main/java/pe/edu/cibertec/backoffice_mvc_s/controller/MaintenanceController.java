@@ -30,13 +30,22 @@ public class MaintenanceController {
     }
 
     @GetMapping("/detail/{id}")
-    public String detail(@PathVariable Integer id, Model model ){
+    public String detail(@PathVariable Integer id, Model model) {
+
+        FilmDetailDto filmDetailDto = maintenanceService.getFilmById(id);
+        model.addAttribute("filmDetailDto", filmDetailDto);
+        return "maintenance-detail";
+
+    }
+
+    @GetMapping("/edit/{id}")
+    public String edit(@PathVariable Integer id, Model model ){
 
         FilmDetailDto filmDetailDto = maintenanceService.getFilmById(id);
         List<Language> languages = maintenanceService.getAllLanguages();
         model.addAttribute("filmDetailDto", filmDetailDto);
         model.addAttribute("languages", languages);
-        return "maintenance-detail";
+        return "maintenance-edit";
     }
 
     @PostMapping("/save")
