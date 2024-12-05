@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pe.edu.cibertec.backoffice_mvc_s.dto.FilmDetailDto;
 import pe.edu.cibertec.backoffice_mvc_s.dto.FilmDto;
+import pe.edu.cibertec.backoffice_mvc_s.dto.FilmEliminarDto;
 import pe.edu.cibertec.backoffice_mvc_s.entity.Film;
 import pe.edu.cibertec.backoffice_mvc_s.entity.Language;
 import pe.edu.cibertec.backoffice_mvc_s.repository.FilmRepository;
@@ -60,33 +61,63 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 
     @Override
     public void saveFilm(FilmDetailDto filmDetailDto) {
-        Optional<Film> optionalFilm = filmRepository.findById(filmDetailDto.filmId());
-        Optional<Language> optionalLanguage = languageRepository.findById(filmDetailDto.languageId());
+        if (filmDetailDto.filmId() == null) {
+            Film newFilm = new Film();
+            newFilm.setTitle(filmDetailDto.title());
+            newFilm.setDescription(filmDetailDto.description());
+            newFilm.setReleaseYear(filmDetailDto.releaseYear());
+            Optional<Language> optionalLanguage = languageRepository.findById(filmDetailDto.languageId());
+            if (optionalLanguage.isPresent()) {
+                newFilm.setLanguage(optionalLanguage.get());
+            } else {
+                throw new RuntimeException("Idioma no encontrado");
+            }
+            newFilm.setRentalDuration(filmDetailDto.rentalDuration());
+            newFilm.setRentalRate(filmDetailDto.rentalRate());
+            newFilm.setLength(filmDetailDto.length());
+            newFilm.setReplacementCost(filmDetailDto.replacementCost());
+            newFilm.setRating(filmDetailDto.rating());
+            newFilm.setSpecialFeatures(filmDetailDto.specialFeatures());
+            newFilm.setLastUpdate(new Date());
 
-        if (optionalFilm.isPresent() && optionalLanguage.isPresent()) {
-            Film film = optionalFilm.get();
-            Language language = optionalLanguage.get();
+            filmRepository.save(newFilm);
+        } else {
 
-            film.setTitle(filmDetailDto.title());
-            film.setDescription(filmDetailDto.description());
-            film.setReleaseYear(filmDetailDto.releaseYear());
-            film.setLanguage(language);
-            film.setRentalDuration(filmDetailDto.rentalDuration());
-            film.setRentalRate(filmDetailDto.rentalRate());
-            film.setLength(filmDetailDto.length());
-            film.setReplacementCost(filmDetailDto.replacementCost());
-            film.setRating(filmDetailDto.rating());
-            film.setSpecialFeatures(filmDetailDto.specialFeatures());
-            film.setLastUpdate(new Date());
+            Optional<Film> optionalFilm = filmRepository.findById(filmDetailDto.filmId());
+            Optional<Language> optionalLanguage = languageRepository.findById(filmDetailDto.languageId());
 
-            filmRepository.save(film);
+            if (optionalFilm.isPresent() && optionalLanguage.isPresent()) {
+                Film film = optionalFilm.get();
+                Language language = optionalLanguage.get();
+
+                film.setTitle(filmDetailDto.title());
+                film.setDescription(filmDetailDto.description());
+                film.setReleaseYear(filmDetailDto.releaseYear());
+                film.setLanguage(language);
+                film.setRentalDuration(filmDetailDto.rentalDuration());
+                film.setRentalRate(filmDetailDto.rentalRate());
+                film.setLength(filmDetailDto.length());
+                film.setReplacementCost(filmDetailDto.replacementCost());
+                film.setRating(filmDetailDto.rating());
+                film.setSpecialFeatures(filmDetailDto.specialFeatures());
+
+                film.setLastUpdate(new Date());
+
+                filmRepository.save(film);
+            } else {
+                throw new RuntimeException("Película o idioma no encontrados");
+            }
         }
     }
-
 
     @Override
     public List<Language> getAllLanguages() {
         return (List<Language>) languageRepository.findAll();
+    }
+
+    @Override
+    public void deleteFilm(FilmEliminarDto filmEliminarDto) {
+        filmRepository.deleteById(filmEliminarDto.filmId());
     }
 
 }

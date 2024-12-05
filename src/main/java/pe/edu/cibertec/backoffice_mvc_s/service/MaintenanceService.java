@@ -2,6 +2,7 @@ package pe.edu.cibertec.backoffice_mvc_s.service;
 
 import pe.edu.cibertec.backoffice_mvc_s.dto.FilmDetailDto;
 import pe.edu.cibertec.backoffice_mvc_s.dto.FilmDto;
+import pe.edu.cibertec.backoffice_mvc_s.dto.FilmEliminarDto;
 import pe.edu.cibertec.backoffice_mvc_s.entity.Language;
 
 
@@ -16,4 +17,6 @@ public interface MaintenanceService {
     void saveFilm(FilmDetailDto filmDetailDto);
 
     List<Language> getAllLanguages();
+
+    void deleteFilm(FilmEliminarDto filmEliminarDto);
 }
